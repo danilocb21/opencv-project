@@ -7,6 +7,8 @@
 #include "utils.hpp"
 #include "inimigo.hpp"
 #include "jogador.hpp"
+#include "tempo.hpp"
+#include "texto.hpp"
 using namespace std;
 using namespace cv;
 
@@ -48,15 +50,24 @@ int main( int argc, const char** argv )
         return 1;
     }
 
-    
-
     //Lógica da captura de vídeo
-    if(capture.isOpened() ) {
+    if (capture.isOpened()) {
         cout << "Video capturing has been started ..." << endl;
+        cout << "Resolution: " << capture.get(CAP_PROP_FRAME_WIDTH) << " x "
+        << capture.get(CAP_PROP_FRAME_HEIGHT) << endl;
         namedWindow(wName, WINDOW_KEEPRATIO);
 
-        vector<Inimigo> inimigos(3); // cria 5 inimigos
+        vector<Inimigo> inimigos(1); // cria 5 inimigos
         Jogador jogador;
+        int vidas = 3; // Contador inicial; a logica de decremento pode ser adicionada depois.
+        Tempo tempoJogo;
+
+        // Sombra preta + texto amarelo para manter contraste em fundos claros e escuros.
+        Texto tempoHudSombra("", Point(21, 41), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
+        Texto tempoHud("", Point(20, 40), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 255, 255), 2, LINE_AA);
+        Texto vidasHudSombra("", Point(21, 76), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
+        Texto vidasHud("", Point(20, 75), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 255, 255), 2, LINE_AA);
+        
         while (1) {
             capture >> frame;
             if (frame.empty()) break;
@@ -73,15 +84,24 @@ int main( int argc, const char** argv )
                 inimigo.move(jogador.pos);
             }
 
-            putText(smallFrame, "Placar:", Point(300, 50), FONT_HERSHEY_PLAIN, 2, Scalar(0,0,255));
-            imshow(wName, smallFrame);
+            string textoTempo = "Tempo vivo: " + tempoJogo.formatadoSegundos(2) + "s";
+            string textoVidas = "Vidas: " + to_string(vidas);
 
-            
+            tempoHudSombra.setConteudo(textoTempo);
+            tempoHud.setConteudo(textoTempo);
+            vidasHudSombra.setConteudo(textoVidas);
+            vidasHud.setConteudo(textoVidas);
+
+            tempoHudSombra.desenhar(smallFrame);
+            tempoHud.desenhar(smallFrame);
+            vidasHudSombra.desenhar(smallFrame);
+            vidasHud.desenhar(smallFrame);
+            imshow(wName, smallFrame);
 
             key = (char)waitKey(10);
             if (key == 27 || key == 'q' || key == 'Q') break;
         }
-            }
+    }
 
     return 0;
 }
