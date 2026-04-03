@@ -1,5 +1,7 @@
 app
 
+build/
+
 # Prerequisites
 *.d
 

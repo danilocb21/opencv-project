@@ -4,18 +4,20 @@
 #include <opencv2/videoio.hpp>
 #include <algorithm>
 #include <iostream>
+
 #include "utils.hpp"
 #include "inimigo.hpp"
 #include "jogador.hpp"
 #include "tempo.hpp"
 #include "texto.hpp"
+
 using namespace std;
 using namespace cv;
 
 
 string cascadeName;
 string wName = "Game";
-int xi =10;
+int xi = 10;
 int yi = 150;
 bool sentido = true;
 
@@ -38,14 +40,13 @@ int main( int argc, const char** argv )
 
     if (!cascade.load(cascadeName)) {
         cout << "ERROR: Could not load classifier cascade: " << cascadeName << endl;
-        return -1;
+        return 1;
     }
     //FACES FINAL
 
 
     //Teste da webcam
-    if(!capture.open(0)) 
-    {
+    if(!capture.open(0)) {
         cout << "Capture from camera #0 didn't work" << endl;
         return 1;
     }
