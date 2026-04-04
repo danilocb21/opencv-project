@@ -71,7 +71,11 @@ int main( int argc, const char** argv )
         Som somDano("assets/fahh_sound_effect.mp3");
         Som somGameOver("assets/FAH-with-shotgun.mp3");
 
-        double recordeAtual = Recorde::ler();
+        const double recordeInicial = Recorde::ler();
+        double recordeAtual = recordeInicial;
+        bool novoRecordeAtingido = false;
+        bool mostrarAvisoNovoRecorde = false;
+        auto fimAvisoNovoRecorde = chrono::steady_clock::time_point::min();
 
         // Sombra preta + texto amarelo para manter contraste em fundos claros e escuros.
         Texto tempoHudSombra("", Point(21, 41), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
@@ -82,14 +86,32 @@ int main( int argc, const char** argv )
         //Recorde
         Texto recordeHudSombra("", Point(21, 111), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
         Texto recordeHud("", Point(20, 110), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 255, 0), 2, LINE_AA); // Cor Verde para destaque
+        Texto novoRecordeHudSombra("", Point(320, 111), FONT_HERSHEY_DUPLEX, 0.8, Scalar(0, 0, 0), 4, LINE_AA);
+        Texto novoRecordeHud("", Point(319, 110), FONT_HERSHEY_DUPLEX, 0.8, Scalar(0, 255, 0), 2, LINE_AA);
         
-        while (1) {
+        while (true) {
             capture >> frame;
             if (frame.empty()) break;
 
             const auto agora = chrono::steady_clock::now();
+            const double tempoAtual = tempoJogo.emSegundos();
             bool jogadorInvulneravel = agora < fimInvulnerabilidade;
             bool houveContatoNoFrame = false;
+
+            if (!novoRecordeAtingido && tempoAtual > recordeInicial) {
+                novoRecordeAtingido = true;
+                mostrarAvisoNovoRecorde = true;
+                fimAvisoNovoRecorde = agora + chrono::seconds(4);
+            }
+
+            if (novoRecordeAtingido) {
+                // Mantem o HUD de recorde sincronizado com o tempo atual da partida.
+                recordeAtual = tempoAtual;
+            }
+
+            if (mostrarAvisoNovoRecorde && agora >= fimAvisoNovoRecorde) {
+                mostrarAvisoNovoRecorde = false;
+            }
 
             // prepara smallFrame uma vez
             Mat smallFrame;
@@ -120,9 +142,10 @@ int main( int argc, const char** argv )
                     cout << "Game over! Tempo vivo: " << tempoJogo.formatadoSegundos(2) << "s" << endl;
                     
                     // Lógica do recorde aplicada antes de dar o break
-                    if (tempoFinal > recordeAtual) {
+                    if (novoRecordeAtingido) {
+                        recordeAtual = tempoFinal;
                         cout << "NOVO RECORDE ALCANCADO! (" << tempoJogo.formatadoSegundos(2) << "s)" << endl;
-                        Recorde::salvar(tempoFinal);
+                        Recorde::salvar(recordeAtual);
                     }
                     
                     break; // Agora sai do loop corretamente após salvar
@@ -145,6 +168,14 @@ int main( int argc, const char** argv )
             recordeHudSombra.setConteudo(textoRecorde);
             recordeHud.setConteudo(textoRecorde);
 
+            if (mostrarAvisoNovoRecorde) {
+                novoRecordeHudSombra.setConteudo("(Novo Recorde!)");
+                novoRecordeHud.setConteudo("(Novo Recorde!)");
+            } else {
+                novoRecordeHudSombra.setConteudo("");
+                novoRecordeHud.setConteudo("");
+            }
+
             tempoHudSombra.desenhar(smallFrame);
             tempoHud.desenhar(smallFrame);
             vidasHudSombra.desenhar(smallFrame);
@@ -152,6 +183,8 @@ int main( int argc, const char** argv )
 
             recordeHudSombra.desenhar(smallFrame);
             recordeHud.desenhar(smallFrame);
+            novoRecordeHudSombra.desenhar(smallFrame);
+            novoRecordeHud.desenhar(smallFrame);
 
             imshow(wName, smallFrame);
 
