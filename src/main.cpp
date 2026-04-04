@@ -109,14 +109,25 @@ int main( int argc, const char** argv )
                 vidas -= 1;
                 fimInvulnerabilidade = agora + duracaoInvulnerabilidade;
                 jogadorInvulneravel = true;
-                if (vidas > 0) somDano.tocar();
+                
+                if (vidas > 0) {
+                    somDano.tocar();
+                }
 
                 if (vidas == 0) {
                     somGameOver.tocar();
+                    double tempoFinal = tempoJogo.emSegundos();
                     cout << "Game over! Tempo vivo: " << tempoJogo.formatadoSegundos(2) << "s" << endl;
-                    break;
+                    
+                    // Lógica do recorde aplicada antes de dar o break
+                    if (tempoFinal > recordeAtual) {
+                        cout << "NOVO RECORDE ALCANCADO! (" << tempoJogo.formatadoSegundos(2) << "s)" << endl;
+                        Recorde::salvar(tempoFinal);
+                    }
+                    
+                    break; // Agora sai do loop corretamente após salvar
                 }
-            }
+}
 
             string textoTempo = "Tempo vivo: " + tempoJogo.formatadoSegundos(2) + "s";
             string textoVidas = "Vidas: " + to_string(vidas);
@@ -147,19 +158,6 @@ int main( int argc, const char** argv )
             key = (char)waitKey(10);
             if (key == 27 || key == 'q' || key == 'Q') break;
 
-            //Lógica da vida --> Recorde
-            if (vidas == 0) {
-                    somGameOver.tocar();
-                    double tempoFinal = tempoJogo.emSegundos();
-                    cout << "Game over! Tempo vivo: " << tempoJogo.formatadoSegundos(2) << "s" << endl;
-                    
-                    if (tempoFinal > recordeAtual) {
-                        cout << "NOVO RECORDE ALCANCADO! (" << tempoJogo.formatadoSegundos(2) << "s)" << endl;
-                        Recorde::salvar(tempoFinal);
-                    }
-                    
-                    break;
-                }
         }
     }
 

@@ -7,26 +7,28 @@
 class Recorde{
     public:
     static double ler(){
-        std::ifstream arquivo("recorde.txt");
-        double recorde =0.0;
+        // Atualizado para procurar na pasta src
+        std::ifstream arquivo("src/recorde.txt"); 
+        double recorde = 0.0;
         if(arquivo.is_open()){
-        
-        arquivo >> recorde;
-        arquivo.close();
+            arquivo >> recorde;
+            arquivo.close();
         }
-
         return recorde;
     }
+    
     static void salvar(double novoRecorde) {
-        std::ofstream arquivo("recorde.txt");
+        // Atualizado para salvar na pasta src
+        std::ofstream arquivo("src/recorde.txt"); 
         
         if (arquivo.is_open()) {
             arquivo << novoRecorde;
             arquivo.close();
         } else {
-            std::cerr << "Erro ao salvar o recorde em recorde.txt" << std::endl;
+            std::cerr << "Erro ao salvar o recorde em src/recorde.txt" << std::endl;
         }
     }
 };
+
 
 #endif
