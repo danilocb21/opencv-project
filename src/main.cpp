@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <format>
 
 #include "utils.hpp"
 #include "inimigo.hpp"
@@ -12,6 +13,7 @@
 #include "tempo.hpp"
 #include "texto.hpp"
 #include "som.hpp"
+#include "recorde.hpp"
 
 using namespace std;
 using namespace cv;
@@ -69,11 +71,17 @@ int main( int argc, const char** argv )
         Som somDano("assets/fahh_sound_effect.mp3");
         Som somGameOver("assets/FAH-with-shotgun.mp3");
 
+        double recordeAtual = Recorde::ler();
+
         // Sombra preta + texto amarelo para manter contraste em fundos claros e escuros.
         Texto tempoHudSombra("", Point(21, 41), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
         Texto tempoHud("", Point(20, 40), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 255, 255), 2, LINE_AA);
         Texto vidasHudSombra("", Point(21, 76), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
         Texto vidasHud("", Point(20, 75), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 255, 255), 2, LINE_AA);
+        
+        //Recorde
+        Texto recordeHudSombra("", Point(21, 111), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
+        Texto recordeHud("", Point(20, 110), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 255, 0), 2, LINE_AA); // Cor Verde para destaque
         
         while (1) {
             capture >> frame;
@@ -116,19 +124,42 @@ int main( int argc, const char** argv )
                 textoVidas += " (imortal)";
             }
 
+            string textoRecorde = "Recorde: " + std::format("{:.2f}", recordeAtual) + "s";
+
             tempoHudSombra.setConteudo(textoTempo);
             tempoHud.setConteudo(textoTempo);
             vidasHudSombra.setConteudo(textoVidas);
             vidasHud.setConteudo(textoVidas);
 
+            recordeHudSombra.setConteudo(textoRecorde);
+            recordeHud.setConteudo(textoRecorde);
+
             tempoHudSombra.desenhar(smallFrame);
             tempoHud.desenhar(smallFrame);
             vidasHudSombra.desenhar(smallFrame);
             vidasHud.desenhar(smallFrame);
+
+            recordeHudSombra.desenhar(smallFrame);
+            recordeHud.desenhar(smallFrame);
+
             imshow(wName, smallFrame);
 
             key = (char)waitKey(10);
             if (key == 27 || key == 'q' || key == 'Q') break;
+
+            //Lógica da vida --> Recorde
+            if (vidas == 0) {
+                    somGameOver.tocar();
+                    double tempoFinal = tempoJogo.emSegundos();
+                    cout << "Game over! Tempo vivo: " << tempoJogo.formatadoSegundos(2) << "s" << endl;
+                    
+                    if (tempoFinal > recordeAtual) {
+                        cout << "NOVO RECORDE ALCANCADO! (" << tempoJogo.formatadoSegundos(2) << "s)" << endl;
+                        Recorde::salvar(tempoFinal);
+                    }
+                    
+                    break;
+                }
         }
     }
 
