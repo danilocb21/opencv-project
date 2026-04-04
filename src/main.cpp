@@ -3,6 +3,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 #include <algorithm>
+#include <chrono>
 #include <iostream>
 
 #include "utils.hpp"
@@ -10,6 +11,7 @@
 #include "jogador.hpp"
 #include "tempo.hpp"
 #include "texto.hpp"
+#include "som.hpp"
 
 using namespace std;
 using namespace cv;
@@ -32,7 +34,7 @@ int main( int argc, const char** argv )
 
 
     //FACES INICIO
-    cascadeName = "haarcascade_frontalface_default.xml";
+    cascadeName = "assets/haarcascade_frontalface_default.xml";
     scale = 1; // usar 1, 2, 4.
     if (scale < 1)
         scale = 1;
@@ -60,8 +62,11 @@ int main( int argc, const char** argv )
 
         vector<Inimigo> inimigos(1); // cria 5 inimigos
         Jogador jogador;
-        int vidas = 3; // Contador inicial; a logica de decremento pode ser adicionada depois.
+        int vidas = 3;
+        const chrono::milliseconds duracaoInvulnerabilidade(2000);
+        auto fimInvulnerabilidade = chrono::steady_clock::time_point::min();
         Tempo tempoJogo;
+        Som somDano("assets/fahh_sound_effect.mp3");
 
         // Sombra preta + texto amarelo para manter contraste em fundos claros e escuros.
         Texto tempoHudSombra("", Point(21, 41), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
@@ -73,6 +78,10 @@ int main( int argc, const char** argv )
             capture >> frame;
             if (frame.empty()) break;
 
+            const auto agora = chrono::steady_clock::now();
+            bool jogadorInvulneravel = agora < fimInvulnerabilidade;
+            bool houveContatoNoFrame = false;
+
             // prepara smallFrame uma vez
             Mat smallFrame;
             double fx = 1 / scale;
@@ -81,12 +90,29 @@ int main( int argc, const char** argv )
 
             for(Inimigo& inimigo : inimigos){
                 inimigo.draw_inimigo(smallFrame);
-                jogador.draw_jogador_rectangle(smallFrame, cascade, inimigo.get_rect());
+                if (jogador.draw_jogador_rectangle(smallFrame, cascade, inimigo.get_rect())) {
+                    houveContatoNoFrame = true;
+                }
                 inimigo.move(jogador.pos);
+            }
+
+            if (houveContatoNoFrame && !jogadorInvulneravel && vidas > 0) {
+                vidas -= 1;
+                fimInvulnerabilidade = agora + duracaoInvulnerabilidade;
+                jogadorInvulneravel = true;
+                somDano.tocar();
+
+                if (vidas == 0) {
+                    cout << "Game over! Tempo vivo: " << tempoJogo.formatadoSegundos(2) << "s" << endl;
+                    break;
+                }
             }
 
             string textoTempo = "Tempo vivo: " + tempoJogo.formatadoSegundos(2) + "s";
             string textoVidas = "Vidas: " + to_string(vidas);
+            if (jogadorInvulneravel) {
+                textoVidas += " (imortal)";
+            }
 
             tempoHudSombra.setConteudo(textoTempo);
             tempoHud.setConteudo(textoTempo);

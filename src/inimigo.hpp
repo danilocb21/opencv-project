@@ -26,7 +26,7 @@ class Inimigo{
             mt19937 gen(seed);
             uniform_int_distribution<> distrib(1,540);
 
-            img  = imread("inimigo.png",IMREAD_UNCHANGED);
+            img  = imread("assets/inimigo.png",IMREAD_UNCHANGED);
             resize(img,dst,Size(),0.15,0.15,INTER_LINEAR);
             s = dst.size();
             pos = {distrib(gen),distrib(gen)};

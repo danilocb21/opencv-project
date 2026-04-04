@@ -12,12 +12,13 @@ using namespace cv;
 
 class Jogador{
     public:
-        pair<int,int>pos;
+        pair<int,int>pos = {0, 0};
 
-        void draw_jogador_rectangle(Mat& smallFrame, CascadeClassifier& cascade, Rect recor){
+        bool draw_jogador_rectangle(Mat& smallFrame, CascadeClassifier& cascade, Rect recor){
             vector<Rect> faces;
             Mat grayFrame;
             Scalar color = Scalar(255,0,0);
+            bool houveContato = false;
 
             cvtColor(smallFrame, grayFrame, COLOR_BGR2GRAY);
             equalizeHist(grayFrame, grayFrame);
@@ -28,10 +29,12 @@ class Jogador{
                 Size(40, 40));
 
             for (Rect r : faces){
-                if (recor.area() > 0 && (r & recor).area() > 0)
+                if (recor.area() > 0 && (r & recor).area() > 0) {
                     color = Scalar(0,0,255);
-                else
+                    houveContato = true;
+                } else {
                     color = Scalar(255,0,0);
+                }
 
                 rectangle(smallFrame,
                     Point(cvRound(r.x), cvRound(r.y)),
@@ -40,5 +43,7 @@ class Jogador{
 
                 pos = {r.x + r.width/2, r.y + r.height/2};
             }
+
+            return houveContato;
         }
 };
