@@ -40,6 +40,8 @@ Durante a partida, o jogador perde vidas ao colidir com o inimigo, e o sistema r
 
 ## 📊 Diagrama de Classes
 
+![Diagrama de classes do projeto](.github/image.png)
+
 ## ⚙️ Funcionalidades
 
 1. **Detecção de jogador por rosto** em tempo real via webcam.
