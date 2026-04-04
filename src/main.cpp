@@ -67,6 +67,7 @@ int main( int argc, const char** argv )
         auto fimInvulnerabilidade = chrono::steady_clock::time_point::min();
         Tempo tempoJogo;
         Som somDano("assets/fahh_sound_effect.mp3");
+        Som somGameOver("assets/FAH-with-shotgun.mp3");
 
         // Sombra preta + texto amarelo para manter contraste em fundos claros e escuros.
         Texto tempoHudSombra("", Point(21, 41), FONT_HERSHEY_DUPLEX, 1.0, Scalar(0, 0, 0), 4, LINE_AA);
@@ -100,9 +101,10 @@ int main( int argc, const char** argv )
                 vidas -= 1;
                 fimInvulnerabilidade = agora + duracaoInvulnerabilidade;
                 jogadorInvulneravel = true;
-                somDano.tocar();
+                if (vidas > 0) somDano.tocar();
 
                 if (vidas == 0) {
+                    somGameOver.tocar();
                     cout << "Game over! Tempo vivo: " << tempoJogo.formatadoSegundos(2) << "s" << endl;
                     break;
                 }
