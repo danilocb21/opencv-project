@@ -39,17 +39,17 @@ class Inimigo{
         }
 
         Rect get_rect(){
-            return Rect(pos.first, pos.second, dst.cols, dst.rows);
+            return Rect(pos.first - dst.cols/2, pos.second - dst.rows/2, dst.cols, dst.rows);
         }
 
-        void move(pair<int,int>pos_jogador){
+        void move(pair<int,int> pos_jogador){
             float dx = pos_jogador.first - pos.first;
             float dy = pos_jogador.second - pos.second;
             float norma = sqrt(dx*dx + dy*dy);
             if (norma == 0) return;
             pos.first  += (int)roundf(dx / norma * speed);
             pos.second += (int)roundf(dy / norma * speed);
-            speed  = max(10.0f,speed+0.002f); // acelera gradualmente
+            speed  = max(8.0f,speed+0.002f); // acelera gradualmente
         }
 
 

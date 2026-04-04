@@ -10,15 +10,15 @@ using namespace std;
 class Som {
 public:
     explicit Som(string caminhoArquivo)
-        : caminhoArquivo_(std::move(caminhoArquivo)), playerSelecionado_(detectarPlayer()) {}
+        : caminhoArquivo(std::move(caminhoArquivo)), playerSelecionado(detectarPlayer()) {}
 
     void tocar() const {
-        tocarAssincrono(caminhoArquivo_, playerSelecionado_);
+        tocarAssincrono(caminhoArquivo, playerSelecionado);
     }
 
 private:
-    string caminhoArquivo_;
-    string playerSelecionado_;
+    string caminhoArquivo;
+    string playerSelecionado;
 
     static string escaparAspasSimples(const string& texto) {
         string escaped;

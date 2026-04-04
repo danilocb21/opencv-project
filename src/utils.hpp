@@ -11,11 +11,11 @@
 using namespace std;
 using namespace cv;
 
-// Declarações de variáveis globais definidas em main.cpp
-extern string wName;
-extern int xi;
-extern int yi;
-extern bool sentido;
+// Variaveis globais legadas mantidas no header por solicitacao.
+inline string wName = "Game";
+inline int xi = 10;
+inline int yi = 150;
+inline bool sentido = true;
 
 /**
  * @brief Draws a transparent image over a frame Mat.
@@ -25,7 +25,7 @@ extern bool sentido;
  * @param xPos x position of the frame image where the image will start.
  * @param yPos y position of the frame image where the image will start.
  */
-void drawImage(Mat frame, Mat img, int xPos, int yPos) {
+inline void drawImage(Mat frame, Mat img, int xPos, int yPos) {
     if (frame.empty() || img.empty())
         return;
 
@@ -62,7 +62,7 @@ void drawImage(Mat frame, Mat img, int xPos, int yPos) {
  * @param alpha transparence level. 0 is 100% transparent, 1 is opaque.
  * @param regin rect region where the should be positioned
  */
-void drawTransRect(Mat frame, Scalar color, double alpha, Rect region) {
+inline void drawTransRect(Mat frame, Scalar color, double alpha, Rect region) {
     Rect frameRect(0, 0, frame.cols, frame.rows);
     Rect clipped = region & frameRect;
     if (clipped.width <= 0 || clipped.height <= 0)
@@ -73,7 +73,7 @@ void drawTransRect(Mat frame, Scalar color, double alpha, Rect region) {
     addWeighted(rectImg, alpha, roi, 1.0 - alpha , 0, roi); 
 }
 
-void detectAndDraw(Mat& frame, CascadeClassifier& cascade, double scale, bool tryflip) {
+inline void detectAndDraw(Mat& frame, CascadeClassifier& cascade, double scale, bool tryflip) {
     vector<Rect> faces;
     Mat grayFrame, smallFrame;
     Scalar color = Scalar(255,0,0);

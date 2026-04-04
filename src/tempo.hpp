@@ -14,11 +14,11 @@ public:
     }
 
     void reiniciar() {
-        inicio_ = Clock::now();
+        inicio = Clock::now();
     }
 
     long long emMilissegundos() const {
-        return chrono::duration_cast<chrono::milliseconds>(Clock::now() - inicio_).count();
+        return chrono::duration_cast<chrono::milliseconds>(Clock::now() - inicio).count();
     }
 
     double emSegundos() const {
@@ -31,7 +31,7 @@ public:
 
 private:
     using Clock = chrono::steady_clock;
-    Clock::time_point inicio_;
+    Clock::time_point inicio;
 };
 
 #endif // TEMPO_HPP
