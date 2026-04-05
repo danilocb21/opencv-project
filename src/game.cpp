@@ -23,7 +23,17 @@ void Game::resetState() {
     frame.release();
 
     inimigos.clear();
-    inimigos.emplace_back();
+    if (modoDificil) {
+        inimigos.emplace_back();
+        inimigos.back().perseguicao = true;
+    } else {
+        inimigos.emplace_back();
+        inimigos.back().speed = 6.0f;
+        inimigos.emplace_back();
+        inimigos.back().speed = 6.0f;
+        inimigos.emplace_back();
+        inimigos.back().speed = 6.0f;
+    }
 
     jogador = Jogador{};
     vidas = 3;
@@ -173,7 +183,7 @@ void Game::encerrarJanela() {
 bool Game::processarFrame() {
     capture >> frame;
     if (frame.empty()) {
-        return false;
+        return true; // frame perdido, continua rodando
     }
 
     atualizarTimers();
@@ -197,7 +207,8 @@ bool Game::processarFrame() {
     return true;
 }
 
-void Game::start() {
+void Game::start(bool modoDificil) {
+    this->modoDificil = modoDificil;
     resetState();
 
     if (scale < 1) {

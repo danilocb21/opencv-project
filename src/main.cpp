@@ -10,10 +10,19 @@ using namespace std;
 void mostrarMenu() {
     cout << endl;
     cout << "==============================" << endl;
-    cout << "1. Iniciar jogo" << endl;
+    cout << "1. Jogar" << endl;
     cout << "2. Exibir recorde" << endl;
     cout << "3. Fechar jogo" << endl;
     cout << "==============================" << endl;
+    cout << "Escolha uma opcao: ";
+}
+
+void mostrarMenuDificuldade() {
+    cout << endl;
+    cout << "--- Selecione a dificuldade ---" << endl;
+    cout << "1. Modo Facil   (3 inimigos, movimento em zigue-zague)" << endl;
+    cout << "2. Modo Dificil (1 inimigo que te persegue e acelera)" << endl;
+    cout << "------------------------------" << endl;
     cout << "Escolha uma opcao: ";
 }
 
@@ -24,15 +33,26 @@ int main() {
         mostrarMenu();
 
         int opcao;
-        cin>>opcao;
+        cin >> opcao;
         cin.ignore();
-        
+
         string pausa;
 
         switch (opcao) {
-        case 1:
-            game.start();
+        case 1: {
+            mostrarMenuDificuldade();
+            int dificuldade;
+            cin >> dificuldade;
+            cin.ignore();
+            if (dificuldade == 1) {
+                game.start(false);
+            } else if (dificuldade == 2) {
+                game.start(true);
+            } else {
+                cout << "Opcao invalida." << endl;
+            }
             break;
+        }
 
         case 2:
             cout << endl;
@@ -40,7 +60,7 @@ int main() {
             cout << "Pressione ENTER para voltar ao menu...";
             getline(cin, pausa);
             break;
-        
+
         case 3:
             cout << "Fechando jogo..." << endl;
             gameRunning = false;

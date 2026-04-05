@@ -18,7 +18,7 @@
 
 class Game {
 public:
-    void start();
+    void start(bool modoDificil);
 
 private:
     using Clock = std::chrono::steady_clock;
@@ -48,6 +48,8 @@ private:
     Tempo tempoJogo;
     Som somDano{"assets/fahh_sound_effect.mp3"};
     Som somGameOver{"assets/FAH-with-shotgun.mp3"};
+
+    bool modoDificil = false;
 
     double recordeInicial = 0.0;
     double recordeAtual = 0.0;
